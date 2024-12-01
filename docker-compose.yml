@@ -1,0 +1,67 @@
+version: '3.8'
+
+services:
+  rabbitmq:
+    image: rabbitmq:3-management
+    environment:
+      RABBITMQ_DEFAULT_USER: ${RABBITMQ_DEFAULT_USER}
+      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_DEFAULT_PASS}
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    networks:
+      - message_broker_network
+
+  api_service:
+    build: ./services/api_service
+    ports:
+      - "5000:5000"
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+    networks:
+      - message_broker_network
+    env_file:
+      - .env
+    restart: always
+
+  filter_service:
+    build: ./services/filter_service
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+    networks:
+      - message_broker_network
+    env_file:
+      - .env
+    restart: always
+
+  screaming_service:
+    build: ./services/screaming_service
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+    networks:
+      - message_broker_network
+    env_file:
+      - .env
+    restart: always
+
+  publish_service:
+    build: ./services/publish_service
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+    networks:
+      - message_broker_network
+    env_file:
+      - .env
+    restart: always
+
+networks:
+  message_broker_network:
