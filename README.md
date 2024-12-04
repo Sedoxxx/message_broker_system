@@ -1,8 +1,8 @@
-# Message Broker System with Pipes-and-Filters
+# Message Broker System with Rabbit MQ & Pipes-and-Filters
 
 ## Introduction
 
-This project demonstrates the implementation of a **message broker system** using RabbitMQ and its transformation into a **pipes-and-filters system**. Both versions of the system process messages through a series of stages (filters), each performing a specific task. The comparison highlights the differences in performance between the two architectures.
+This project demonstrates the implementation of a **message broker system** using RabbitMQ and its transformation into a **pipes-and-filters system**. Both versions of the system process messages through a series of stages (units) or (filters), each performing a specific task. The comparison highlights the differences in performance between the two architectures.
 
 ---
 
