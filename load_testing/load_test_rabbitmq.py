@@ -6,7 +6,7 @@ import string
 
 # Configuration
 API_URL = 'http://localhost:5000/message'  # Update if the API is hosted elsewhere
-NUM_THREADS = 50  # Number of concurrent threads
+NUM_THREADS = 30  # Number of concurrent threads
 REQUESTS_PER_THREAD = 100  # Number of requests per thread
 
 # Test Messages
@@ -68,8 +68,6 @@ def main():
         report_file.write(f'- **Total Requests Sent**: {total_requests}\n')
         report_file.write(f'- **Total Time Taken**: {duration:.2f} seconds\n')
         report_file.write(f'- **Requests per Second**: {total_requests / duration:.2f}\n')
-        report_file.write('\n## Performance Comparison\n\n')
-        report_file.write('*(Placeholder for comparison with pipes-and-filters version)*\n')
 
 if __name__ == '__main__':
     main()

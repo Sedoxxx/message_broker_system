@@ -157,21 +157,25 @@ If configured correctly, you should receive an email as per the message sent. If
    pip install requests
    ```
 
-4. Run the load testing script:
+4. Run the load testing script for both message brokers and pipes and filters system:
 
    ```bash
    python load_test_rabbitmq.py
+   ```
+
+   ```bash
+   python load_test_pipes.py
    ```
 
 ### Understanding the Load Test
 
 - **Number of Threads**: The script uses 50 concurrent threads.
 - **Requests per Thread**: Each thread sends 100 requests.
-- **Total Requests**: 50 threads * 100 requests = 5,000 total requests.
+- **Total Requests**: 30 threads * 100 requests = 3,000 total requests.
 - **Metrics Captured**:
   - Total time taken.
   - Requests per second.
-  - Success and error rates.
+  - Requests sent.
 
 ### Viewing the Load Test Report
 
@@ -181,17 +185,23 @@ After the test completes, a `report.md` file is generated in the `load_testing/`
 
 ## Performance Report
 
-### Load Testing Report for RabbitMQ-based System
+### Performance Comparison Summary
 
-- **Total Requests Sent**: *Placeholder for actual number*
-- **Total Time Taken**: *Placeholder for actual time* seconds
-- **Requests per Second**: *Placeholder for actual RPS*
+| Metric                       | RabbitMQ-Based System          | Pipes-and-Filters System          |
+|------------------------------|--------------------------------|-----------------------------------|
+| **Workload**                 | 3000 text messages            | 16-second 60fps Full HD video    |
+| **Total Time Taken**         | 39.89 seconds                 | 12.18 seconds                    |
+| **Throughput**               | 75.20 requests per second     | 30 pipelines in 12.18 seconds    |
+| **Overhead**                 | Network + broker communication | Minimal (in-memory only)         |
 
-#### Performance Comparison
+1. **Latency**: The pipes-and-filters system achieves lower latency (0.41 seconds per pipeline) due to in-memory operations, while RabbitMQ incurs overhead from broker communication and message serialization.
 
-*(Placeholder for comparison with pipes-and-filters version)*
+2. **Throughput**: Pipes-and-filters processes computationally intensive tasks faster, whereas RabbitMQ offers moderate throughput suitable for asynchronous messaging workloads.
 
----
+3. **Scalability**: RabbitMQ supports distributed scaling across machines, making it ideal for decoupled systems. Pipes-and-filters is limited to the resources of a single machine but excels in high-performance, real-time processing.
+
+### Summary
+The RabbitMQ-based system is better for distributed and fault-tolerant applications, while the pipes-and-filters system is optimal for CPU-intensive, real-time workloads. The choice depends on workload requirements and system scalability needs.
 
 ## Troubleshooting
 
