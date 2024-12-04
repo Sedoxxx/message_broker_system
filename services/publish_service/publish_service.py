@@ -27,7 +27,6 @@ email_to = os.environ.get('EMAIL_TO')
 def send_email(user_alias, message_text):
     subject = f'New Message from {user_alias}'
     body = f"From user: {user_alias}\nMessage: {message_text}"
-    print(f"Email & Pass: {email_user}:{email_pass}", flush=True)
 
     msg = MIMEText(body)
     msg['Subject'] = subject

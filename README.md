@@ -167,21 +167,21 @@ If configured correctly, you should receive an email as per the message sent. If
    python load_test_pipes.py
    ```
 
-### Understanding the Load Test
-
-- **Number of Threads**: The script uses 50 concurrent threads.
-- **Requests per Thread**: Each thread sends 100 requests.
-- **Total Requests**: 30 threads * 100 requests = 3,000 total requests.
-- **Metrics Captured**:
-  - Total time taken.
-  - Requests per second.
-  - Requests sent.
-
 ### Viewing the Load Test Report
 
 After the test completes, a `report.md` file is generated in the `load_testing/` directory containing the performance metrics.
 
+### Running for video-pipes-and-filters: 
+
+Check this repository for further info and access to the source code:
+
+[video-pipes-filters](https://github.com/saleemasekrea000/video-pipes-filters)
+
 ---
+
+## Demo video : 
+
+[Demo Video Drive](https://drive.google.com/file/d/1mL-dCJAQEWZLji_5C_-AhOzaWPFDEU65/view?usp=sharing)
 
 ## Performance Report
 
@@ -198,10 +198,10 @@ After the test completes, a `report.md` file is generated in the `load_testing/`
 
 2. **Throughput**: Pipes-and-filters processes computationally intensive tasks faster, whereas RabbitMQ offers moderate throughput suitable for asynchronous messaging workloads.
 
-3. **Scalability**: RabbitMQ supports distributed scaling across machines, making it ideal for decoupled systems. Pipes-and-filters is limited to the resources of a single machine but excels in high-performance, real-time processing.
+3. **Scalability**: Our message broker system supports distributed scaling across machines, making it ideal for decoupled systems. Pipes-and-filters is limited to the resources of a single machine but excels in high-performance, real-time processing.
 
 ### Summary
-The RabbitMQ-based system is better for distributed and fault-tolerant applications, while the pipes-and-filters system is optimal for CPU-intensive, real-time workloads. The choice depends on workload requirements and system scalability needs.
+Our message broker system is better for distributed and fault-tolerant applications, while the pipes-and-filters system is optimal for CPU-intensive, real-time workloads. The choice depends on workload requirements and system scalability needs.
 
 ## Troubleshooting
 
