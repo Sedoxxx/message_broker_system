@@ -1,9 +1,5 @@
-# Load Testing Report for RabbitMQ-based System
+# Load Testing Report for Pipes-and-Filters System
 
-- **Total Requests Sent**: 3000
-- **Total Time Taken**: 39.89 seconds
-- **Requests per Second**: 75.20
-
-## Performance Comparison
-
-*(Placeholder for comparison with pipes-and-filters version)*
+- **Total Requests Sent**: 50
+- **Total Time Taken**: 20.55 seconds
+- **Requests per Second**: 2.43

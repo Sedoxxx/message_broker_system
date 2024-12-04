@@ -1,5 +1,5 @@
-# Load Testing Report for Pipes-and-Filters System
+# Load Testing Report for RabbitMQ-based System
 
-- **Total Instances**: 30
-- **Total Time Taken**: 12.66 seconds
-- **Average Time per Instance**: 0.42 seconds
+- **Total Requests Sent**: 50
+- **Total Time Taken**: 0.20 seconds
+- **Requests per Second**: 250.04

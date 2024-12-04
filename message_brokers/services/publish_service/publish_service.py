@@ -35,7 +35,6 @@ def send_email(user_alias, message_text):
 
     try:
         with smtplib.SMTP(email_host, email_port) as server:
-            # server.ehlo()
             server.starttls()
             server.login(email_user, email_pass)
             server.sendmail(email_from, email_to.split(','), msg.as_string())
@@ -55,13 +54,10 @@ def connect_and_consume():
                 print(f"Publish Service: Received message: {message}", flush=True)
                 user_alias = message['user_alias']
                 message_text = message['message_text']
-                print(f"Publish Service: Sending email for message: {message_text}", flush=True)
-
                 send_email(user_alias, message_text)
-                print(f"Publish Service: Email sent for message: {message_text}", flush=True)
                 ch.basic_ack(delivery_tag=method.delivery_tag)
 
-            channel.basic_qos(prefetch_count=1)
+            channel.basic_qos(prefetch_count=5)
             channel.basic_consume(queue='publish_queue', on_message_callback=callback)
 
             print('Publish Service is running...')
@@ -73,15 +69,6 @@ def connect_and_consume():
         except Exception as e:
             print(f"Publish Service: Unexpected error: {e}", flush=True)
             time.sleep(5)
-        finally:
-            try:
-                channel.stop_consuming()
-            except:
-                pass
-            try:
-                connection.close()
-            except:
-                pass
 
 if __name__ == '__main__':
     connect_and_consume()

@@ -1,8 +1,8 @@
-# Message Broker System
+# Message Broker System with Pipes-and-Filters
 
 ## Introduction
 
-This project is a hands-on implementation of an **event-driven system** using a **message broker** (RabbitMQ). The system is designed to process messages through a series of services, each performing a specific task, and demonstrates the use of microservices and asynchronous communication.
+This project demonstrates the implementation of a **message broker system** using RabbitMQ and its transformation into a **pipes-and-filters system**. Both versions of the system process messages through a series of stages (filters), each performing a specific task. The comparison highlights the differences in performance between the two architectures.
 
 ---
 
@@ -17,10 +17,14 @@ The system consists of four services:
 
 **Message Flow:**
 
-- The API Service receives messages and publishes them to the `filter_queue`.
-- The Filter Service consumes messages from `filter_queue`, filters out unwanted messages, and publishes valid messages to `screaming_queue`.
-- The Screaming Service consumes messages from `screaming_queue`, converts the text to uppercase, and publishes them to `publish_queue`.
-- The Publish Service consumes messages from `publish_queue` and sends emails to the recipients.
+- **RabbitMQ-Based System**:
+  - The API Service receives messages and publishes them to the `filter_queue`.
+  - The Filter Service consumes messages from `filter_queue`, filters out unwanted messages, and publishes valid messages to `screaming_queue`.
+  - The Screaming Service consumes messages from `screaming_queue`, converts the text to uppercase, and publishes them to `publish_queue`.
+  - The Publish Service consumes messages from `publish_queue` and sends emails to the recipients.
+
+- **Pipes-and-Filters System**:
+  - All services are combined into a single application. Each stage (filter) communicates via in-memory queues.
 
 ---
 
@@ -31,28 +35,42 @@ message_broker_system/
 ├── .env
 ├── .env.example
 ├── docker-compose.yml
+├── LICENSE
 ├── README.md
-├── services/
-│   ├── api_service/
-│   │   ├── api_service.py
-│   │   ├── Dockerfile
-│   │   └── requirements.txt
-│   ├── filter_service/
-│   │   ├── filter_service.py
-│   │   ├── Dockerfile
-│   │   └── requirements.txt
-│   ├── screaming_service/
-│   │   ├── screaming_service.py
-│   │   ├── Dockerfile
-│   │   └── requirements.txt
-│   └── publish_service/
-│       ├── publish_service.py
-│       ├── Dockerfile
-│       └── requirements.txt
+├── message_brokers/
+│   ├── services/
+│   │   ├── api_service/
+│   │   │   ├── api_service.py
+│   │   │   ├── Dockerfile
+│   │   │   └── requirements.txt
+│   │   ├── filter_service/
+│   │   │   ├── filter_service.py
+│   │   │   ├── Dockerfile
+│   │   │   └── requirements.txt
+│   │   ├── publish_service/
+│   │   │   ├── publish_service.py
+│   │   │   ├── Dockerfile
+│   │   │   └── requirements.txt
+│   │   └── screaming_service/
+│       │   ├── screaming_service.py
+│       │   ├── Dockerfile
+│       │   └── requirements.txt
 ├── load_testing/
+│   ├── load_test_pipes.py
 │   ├── load_test_rabbitmq.py
-│   ├── test.py
-│   └── report.md
+│   ├── report.md
+│   ├── report2.md
+│   └── test.py
+├── pipes_and_filters/
+│   ├── filters/
+│   │   ├── __pycache__/
+│   │   ├── __init__.py
+│   │   ├── filter_service.py
+│   │   ├── publish_service.py
+│   │   ├── screaming_service.py
+│   ├── .env
+│   ├── main.py
+│   └── requirements.txt
 ```
 
 ---
@@ -66,6 +84,10 @@ message_broker_system/
 
 ---
 
+## Demo Video
+
+[Demo Video Drive](https://drive.google.com/file/d/1mL-dCJAQEWZLji_5C_-AhOzaWPFDEU65/view?usp=sharing)
+
 ## Setup and Installation
 
 ### 1. Clone the Repository
@@ -77,36 +99,35 @@ cd message_broker_system
 
 ### 2. Configure Environment Variables
 
-Create a `.env` file in the root directory based on `.env.example` file.
-
-
-**Note:** Replace the email settings with your actual SMTP server details.
+Create a `.env` file in the root directory based on the `.env.example` file. Replace the email settings with your actual SMTP server details.
 
 ### 3. Build and Start the Services
 
+For the **RabbitMQ-Based System**:
 ```bash
 docker-compose up --build
+```
+
+For the **Pipes-and-Filters System**:
+```bash
+python main.py
 ```
 
 ---
 
 ## Running the Application
 
-Once the Docker containers are up and running, the services will be accessible as per the configuration.
-
 ### Access RabbitMQ Management UI (Optional)
 
-You can access the RabbitMQ Management UI at [http://localhost:15672](http://localhost:15672) using the default credentials (`guest` / `guest`).
+For the RabbitMQ-based system, you can access the RabbitMQ Management UI at [http://localhost:15672](http://localhost:15672) using the default credentials (`guest` / `guest`).
 
 ---
 
 ## Testing the Application
 
-### 1. Sending a Message Without Stop Words
+### Sending a Message Without Stop Words
 
 Use `curl` or Postman to send a POST request to the API Service.
-
-#### Using `curl`:
 
 ```bash
 curl -X POST -H "Content-Type: application/json" \
@@ -116,99 +137,63 @@ http://localhost:5000/message
 
 #### Expected Outcome
 
-- The message passes through the Filter Service.
-- The Screaming Service converts the message to uppercase.
-- The Publish Service sends an email with the message content.
-
-### 2. Sending a Message With Stop Words
-
-```bash
-curl -X POST -H "Content-Type: application/json" \
--d '{"user_alias": "student", "message_text": "I love bird-watching"}' \
-http://localhost:5000/message
-```
-
-#### Expected Outcome
-
-- The Filter Service detects the stop word (`bird-watching`) and filters out the message.
-- No email is sent.
-
-### 3. Checking the Email
-
-If configured correctly, you should receive an email as per the message sent. If using Mailtrap, you can view the email in your Mailtrap inbox.
+- **RabbitMQ-Based System**: The message flows through the Filter, Screaming, and Publish services, and an email is sent.
+- **Pipes-and-Filters System**: The message flows through the filters in-memory, and an email is sent.
 
 ---
 
 ## Load Testing
 
-### Running the Load Testing Script
+### Running the Load Testing Scripts
 
-1. Open a new terminal window.
+Navigate to the `load_testing/` directory:
 
-2. Navigate to the `load_testing/` directory:
+```bash
+cd message_broker_system/load_testing
+```
 
-   ```bash
-   cd message_broker_system/load_testing
-   ```
+Run the load testing script for the RabbitMQ-based system:
 
-3. Install the required dependencies:
+```bash
+python load_test_rabbitmq.py
+```
 
-   ```bash
-   pip install requests
-   ```
+Run the load testing script for the Pipes-and-Filters system:
 
-4. Run the load testing script for both message brokers and pipes and filters system:
+```bash
+python load_test_pipes.py
+```
 
-   ```bash
-   python load_test_rabbitmq.py
-   ```
-
-   ```bash
-   python load_test_pipes.py
-   ```
-
-### Viewing the Load Test Report
-
-After the test completes, a `report.md` file is generated in the `load_testing/` directory containing the performance metrics.
-
-### Running for video-pipes-and-filters: 
-
-Check this repository for further info and access to the source code:
-
-[video-pipes-filters](https://github.com/saleemasekrea000/video-pipes-filters)
-
----
-
-## Demo video : 
-
-[Demo Video Drive](https://drive.google.com/file/d/1mL-dCJAQEWZLji_5C_-AhOzaWPFDEU65/view?usp=sharing)
-
-## Performance Report
+## Load Testing Performance Report
 
 ### Performance Comparison Summary
 
 | Metric                       | RabbitMQ-Based System          | Pipes-and-Filters System          |
 |------------------------------|--------------------------------|-----------------------------------|
-| **Workload**                 | 3000 text messages            | 16-second 60fps Full HD video    |
-| **Total Time Taken**         | 39.89 seconds                 | 12.18 seconds                    |
-| **Throughput**               | 75.20 requests per second     | 30 pipelines in 12.18 seconds    |
+| **Total Requests Sent**      | 50                            | 50                                |
+| **Total Time Taken**         | 0.20 seconds                  | 20.55 seconds                    |
+| **Requests per Second**      | 250.04                        | 2.43                              |
 | **Overhead**                 | Network + broker communication | Minimal (in-memory only)         |
 
-1. **Latency**: The pipes-and-filters system achieves lower latency (0.41 seconds per pipeline) due to in-memory operations, while RabbitMQ incurs overhead from broker communication and message serialization.
+1. **Throughput**: The RabbitMQ-based system handles requests much faster (250.04 requests/second) due to its distributed, asynchronous nature. The Pipes-and-Filters system is limited by in-memory queues and single-process threading.
+2. **Latency**: The Pipes-and-Filters system has higher latency due to sequential processing, while RabbitMQ benefits from parallelism and queuing.
+3. **Scalability**: The RabbitMQ-based system supports horizontal scaling, making it more suitable for large-scale, distributed applications.
 
-2. **Throughput**: Pipes-and-filters processes computationally intensive tasks faster, whereas RabbitMQ offers moderate throughput suitable for asynchronous messaging workloads.
+### Conclusion
+The RabbitMQ-based system excels in distributed and asynchronous workloads, while the Pipes-and-Filters system is better suited for small-scale, high-performance, CPU-intensive tasks.
 
-3. **Scalability**: Our message broker system supports distributed scaling across machines, making it ideal for decoupled systems. Pipes-and-filters is limited to the resources of a single machine but excels in high-performance, real-time processing.
-
-### Summary
-Our message broker system is better for distributed and fault-tolerant applications, while the pipes-and-filters system is optimal for CPU-intensive, real-time workloads. The choice depends on workload requirements and system scalability needs.
+---
 
 ## Troubleshooting
 
 - **RabbitMQ Connection Issues**: Ensure that the RabbitMQ service is running and accessible. The services are configured to retry connections if they fail.
-
 - **Email Sending Issues**: Verify your SMTP server settings and credentials in the `.env` file.
-
 - **Port Conflicts**: Ensure that the ports defined in `docker-compose.yml` are not in use by other applications.
 
 ---
+
+
+
+
+
+

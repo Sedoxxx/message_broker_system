@@ -6,8 +6,8 @@ import string
 
 # Configuration
 API_URL = 'http://localhost:5000/message'  # Update if the API is hosted elsewhere
-NUM_THREADS = 30  # Number of concurrent threads
-REQUESTS_PER_THREAD = 100  # Number of requests per thread
+NUM_THREADS = 5  # Number of concurrent threads
+REQUESTS_PER_THREAD = 10  # Number of requests per thread
 
 # Test Messages
 test_messages = [
@@ -63,7 +63,7 @@ def main():
     print(f"Requests per second: {total_requests / duration:.2f}")
 
     # Write results to report.md
-    with open('report.md', 'w') as report_file:
+    with open('report2.md', 'w') as report_file:
         report_file.write('# Load Testing Report for RabbitMQ-based System\n\n')
         report_file.write(f'- **Total Requests Sent**: {total_requests}\n')
         report_file.write(f'- **Total Time Taken**: {duration:.2f} seconds\n')
